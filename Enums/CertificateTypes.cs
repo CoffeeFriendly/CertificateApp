@@ -3,8 +3,8 @@
     public enum CertificateTypes
     {
         NDFL = 1,
-        workRecord = 2,
-        averageSalary = 3,
-        custom = 4
+        WorkRecord = 2,
+        AverageSalary = 3,
+        Custom = 4
     }
 }
