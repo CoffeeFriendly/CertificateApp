@@ -19,6 +19,8 @@ namespace CertificatesApp.Services
 
         public async Task<CertificateRequestDto> CreateRequestAsync(CreateCertificateRequestDto dto)
         {
+            var employeeExists = await _context.Users
+                .AnyAsync(u => u.Id == dto.EmployeeId);
             var activeRequestExists = await _context.CertificateRequests
                 .AnyAsync(r =>
                     r.EmployeeId == dto.EmployeeId &&
@@ -28,6 +30,10 @@ namespace CertificatesApp.Services
             if (activeRequestExists)
             {
                 throw new DuplicateRequestException("Обнаружен дубликат");
+            }
+            if (!employeeExists)
+            {
+                throw new NotFoundException("Пользователь с id " + dto.EmployeeId + " не найден.");
             }
 
             var request = new CertificateRequest

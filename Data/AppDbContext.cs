@@ -18,7 +18,7 @@ namespace CertificatesApp.Data
         {
             modelBuilder.Entity<RequestHistory>()
                 .HasOne<Models.CertificateRequest>()
-                .WithMany()
+                .WithMany(r => r.History)
                 .HasForeignKey(h => h.RequestId)
                 .OnDelete(DeleteBehavior.Cascade);
 

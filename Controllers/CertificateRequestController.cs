@@ -42,6 +42,14 @@ namespace CertificatesApp.Controllers
             return Ok(request);
         }
 
+        [HttpGet("")]
+        [ProducesResponseType(typeof(CertificateRequestDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<CertificateRequestDto>>> GetAll()
+        {
+            var request = await _service.GetAllRequests();
+            return Ok(request);
+        }
+
         [HttpPatch("{id:guid}/status")]
         [ProducesResponseType(typeof(CertificateRequestDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
