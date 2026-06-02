@@ -8,6 +8,6 @@ namespace CertificatesApp.Services
         Task<List<CertificateRequestDto>> GetByEmployeeAsync(Guid employeeId);
         Task<CertificateRequestDto> GetByIdAsync(Guid id);
         Task<List<CertificateRequestDto>> GetAllRequests();
-        Task<CertificateRequestDto> UpdateStatusAsync(Guid requestId, UpdateStatusDto dto);
+        Task<CertificateRequestDto> UpdateStatusAsync(Guid requestId, Guid initiatorId, UpdateStatusDto dto);
     }
 }

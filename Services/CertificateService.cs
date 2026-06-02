@@ -71,7 +71,7 @@ namespace CertificatesApp.Services
             return MapToDto(request);
         }
 
-        public async Task<CertificateRequestDto> UpdateStatusAsync(Guid requestId, UpdateStatusDto dto)
+        public async Task<CertificateRequestDto> UpdateStatusAsync(Guid requestId, Guid initiatorId, UpdateStatusDto dto)
         {
             var request = await _context.CertificateRequests.FindAsync(requestId);
 
@@ -88,12 +88,25 @@ namespace CertificatesApp.Services
                 throw new InvalidStatusChangeException("Недопустимый переход статуса заявки.");
             }
 
+            var employee = await _context.Users
+                .FindAsync(initiatorId);
+
+            if (employee == null)
+            {
+                throw new InvalidEmployeeException("Сотрудник не найден");
+            }
+
+            if (!IsStatusChangeAuthorized(request, employee, newStatus))
+            {
+                throw new InvalidStatusChangeException("Нет доступа к операции");
+            }
+
             request.Status = newStatus;
 
             var history = new RequestHistory
             {
                 RequestId = requestId,
-                UserId = dto.UserId,
+                InitiatorId = initiatorId,
                 FromStatus = oldStatus,
                 ToStatus = newStatus,
                 UpdatedAt = DateTime.UtcNow
@@ -108,6 +121,7 @@ namespace CertificatesApp.Services
         public async Task<List<CertificateRequestDto>> GetAllRequests()
         {
             var request = await _context.CertificateRequests
+                .Include(r => r.History)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
             return request.Select(MapToDto).ToList();
@@ -136,6 +150,19 @@ namespace CertificatesApp.Services
             throw new InvalidStatusChangeException("Неожиданная ошибка транзакции статуса");
         }
 
+        private bool IsStatusChangeAuthorized(CertificateRequest request, User initiator, CertificateStatus status)
+        {
+            if (status == CertificateStatus.Cancelled && request.EmployeeId == initiator.Id)
+            {
+                return true;
+            }
+            if (initiator.Role == UserRoles.Accountant)
+            {
+                return true;
+            }
+            return false;
+        }
+
         private CertificateRequestDto MapToDto(CertificateRequest request)
         {
             return new CertificateRequestDto
@@ -147,7 +174,18 @@ namespace CertificatesApp.Services
                 Reason = request.Reason,
                 Status = request.Status,
                 CreatedAt = request.CreatedAt,
-                History = request.History
+                History = request.History.Select(MapToDto).ToList()
+            };
+        }
+        private RequestHistoryDto MapToDto(RequestHistory request)
+        {
+            return new RequestHistoryDto
+            {
+                Id = request.Id,
+                InitiatorId = request.InitiatorId,
+                FromStatus = request.FromStatus,
+                ToStatus = request.ToStatus,
+                UpdatedAt = request.UpdatedAt
             };
         }
     }

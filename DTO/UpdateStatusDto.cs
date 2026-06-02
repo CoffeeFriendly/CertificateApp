@@ -8,7 +8,7 @@ namespace CertificatesApp.DTO
         [Required]
         public Guid Id;
         [Required]
-        public Guid UserId;
+        public Guid InitiatorId;
         [Required]
         public CertificateStatus NewStatus { get; set; }
     }

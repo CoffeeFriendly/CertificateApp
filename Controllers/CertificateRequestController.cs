@@ -54,9 +54,9 @@ namespace CertificatesApp.Controllers
         [ProducesResponseType(typeof(CertificateRequestDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<CertificateRequestDto>> UpdateStatus(Guid id, [FromBody] UpdateStatusDto dto)
+        public async Task<ActionResult<CertificateRequestDto>> UpdateStatus(Guid id, Guid initiatorId, [FromBody] UpdateStatusDto dto)
         {
-            var request = await _service.UpdateStatusAsync(id, dto);
+            var request = await _service.UpdateStatusAsync(id, initiatorId, dto);
             return Ok(request);
         }
     }

@@ -12,6 +12,6 @@ namespace CertificatesApp.DTO
         public required string Reason { get; set; }
         public CertificateStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
-        public List<RequestHistory> History { get; set; }
+        public List<RequestHistoryDto> History { get; set; }
     }
 }
