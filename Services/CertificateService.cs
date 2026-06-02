@@ -16,7 +16,7 @@ namespace CertificatesApp.Services
             _context = context;
         }
 
-        public async Task<CertificateRequestDto> CreateRequestAsync(CertificateRequestDto dto)
+        public async Task<CertificateRequestDto> CreateRequestAsync(CreateCertificateRequestDto dto)
         {
             var activeRequestExists = await _context.CertificateRequests
                 .AnyAsync(r =>
@@ -96,6 +96,14 @@ namespace CertificatesApp.Services
             await _context.SaveChangesAsync();
 
             return await GetByIdAsync(requestId);
+        }
+
+        public async Task<List<CertificateRequestDto>> GetAllRequests()
+        {
+            var request = await _context.CertificateRequests
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+            return request.Select(MapToDto).ToList();
         }
 
         // Вспомогательные методы. Если будет время - возможно лучше вынести в отдельный файл utils как в прошлом проекте
