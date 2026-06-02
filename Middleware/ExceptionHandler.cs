@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using CertificatesApp.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CertificatesApp.Middleware
@@ -17,10 +18,12 @@ namespace CertificatesApp.Middleware
         {
             _logger.LogError(exception, "Произошла ошибка: {message}", exception.Message);
 
-            // ЗАМЕНИТЬ после создания кастомных исключений!!!
             var (statusCode, title) = exception switch
             {
-                Exception => (StatusCodes.Status403Forbidden, "Error placeholder")
+                NotFoundException => (StatusCodes.Status404NotFound, "Заявка не найдена"),
+                InvalidStatusChangeException => (StatusCodes.Status400BadRequest, "Некорректное изменение статуса заявки"),
+                DuplicateRequestException => (StatusCodes.Status409Conflict, "Попытка создать дубликат заявки"),
+                _ => (StatusCodes.Status500InternalServerError, "Внутренняя ошибка")
             };
 
             var problemDetails = new ProblemDetails
