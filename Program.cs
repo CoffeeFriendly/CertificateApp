@@ -13,6 +13,9 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<CertificatesApp.Data.AppDbContext>(options =>
     options.UseSqlite("Data Source=certificatesApp.db"));
 
+builder.Services.AddExceptionHandler<ExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -20,9 +23,6 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<CertificatesApp.Data.AppDbContext>();
     db.Database.EnsureCreated();
 }
-
-builder.Services.AddExceptionHandler<ExceptionHandler>();
-builder.Services.AddProblemDetails();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
