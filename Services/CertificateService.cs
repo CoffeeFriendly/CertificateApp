@@ -33,7 +33,7 @@ namespace CertificatesApp.Services
             }
             if (!employeeExists)
             {
-                throw new NotFoundException("Пользователь с id " + dto.EmployeeId + " не найден.");
+                throw new InvalidEmployeeException("Пользователь с id " + dto.EmployeeId + " не найден.");
             }
 
             var request = new CertificateRequest

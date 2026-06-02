@@ -23,6 +23,7 @@ namespace CertificatesApp.Middleware
                 NotFoundException => (StatusCodes.Status404NotFound, "Заявка не найдена"),
                 InvalidStatusChangeException => (StatusCodes.Status400BadRequest, "Некорректное изменение статуса заявки"),
                 DuplicateRequestException => (StatusCodes.Status409Conflict, "Попытка создать дубликат заявки"),
+                InvalidEmployeeException => (StatusCodes.Status404NotFound, "Сотрудник не найден"),
                 _ => (StatusCodes.Status500InternalServerError, "Внутренняя ошибка")
             };
 
