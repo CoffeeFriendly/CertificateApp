@@ -5,13 +5,13 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace CertificatesApp.Data
 {
-    public class AppContext : DbContext
+    public class AppDbContext : DbContext
     {
         public DbSet<Models.CertificateRequest> CertificateRequests { get; set; } = null!;
         public DbSet<RequestHistory> RequestHistory { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
 
-        public AppContext(DbContextOptions<AppContext> options)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

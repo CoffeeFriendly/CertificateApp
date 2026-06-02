@@ -9,14 +9,14 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<CertificatesApp.Data.AppContext>(options =>
+builder.Services.AddDbContext<CertificatesApp.Data.AppDbContext>(options =>
     options.UseSqlite("Data Source=certificatesApp.db"));
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<CertificatesApp.Data.AppContext>();
+    var db = scope.ServiceProvider.GetRequiredService<CertificatesApp.Data.AppDbContext>();
     db.Database.EnsureCreated();
 }
 

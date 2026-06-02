@@ -11,5 +11,6 @@ namespace CertificatesApp.Models
         public required string Reason { get; set; }
         public CertificateStatus Status { get; set; } = CertificateStatus.Created;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public List<RequestHistory> History { get; set; } = new();
     }
 }
