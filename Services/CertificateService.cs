@@ -1,6 +1,7 @@
 ﻿using CertificatesApp.Data;
 using CertificatesApp.DTO;
 using CertificatesApp.Enums;
+using CertificatesApp.Exceptions;
 using CertificatesApp.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
@@ -26,7 +27,7 @@ namespace CertificatesApp.Services
                     r.Status != Enums.CertificateStatus.Cancelled);
             if (activeRequestExists)
             {
-                throw new Exception("Обнаружен дубликат");
+                throw new DuplicateRequestException("Обнаружен дубликат");
             }
 
             var request = new CertificateRequest
@@ -59,7 +60,7 @@ namespace CertificatesApp.Services
                 .FirstOrDefaultAsync(r => r.Id == requestId);
             if (request == null)
             {
-                throw new Exception("Заявка с id " + requestId + " не найдена.");
+                throw new NotFoundException("Заявка с id " + requestId + " не найдена.");
             }
             return MapToDto(request);
         }
@@ -70,7 +71,7 @@ namespace CertificatesApp.Services
 
             if (request == null)
             {
-                throw new Exception("Заявка с id " + requestId + " не найдена.");
+                throw new NotFoundException("Заявка с id " + requestId + " не найдена.");
             }
 
             var oldStatus = request.Status;
@@ -78,7 +79,7 @@ namespace CertificatesApp.Services
 
             if (!IsValidStatusChange(oldStatus, newStatus))
             {
-                throw new Exception("Недопустимый переход статуса заявки.");
+                throw new InvalidStatusChangeException("Недопустимый переход статуса заявки.");
             }
 
             request.Status = newStatus;
@@ -111,11 +112,11 @@ namespace CertificatesApp.Services
         {
             if (oldStatus == newStatus)
             {
-                throw new Exception("Новый статус должен отличаться от старого.");
+                throw new InvalidStatusChangeException("Новый статус должен отличаться от старого.");
             }
             if (oldStatus == CertificateStatus.Completed || oldStatus == CertificateStatus.Cancelled)
             {
-                throw new Exception("Заявки в статусе ЗАВЕРШЕНО или ОТМЕНЕНО недопустимо менять");
+                throw new InvalidStatusChangeException("Заявки в статусе ЗАВЕРШЕНО или ОТМЕНЕНО недопустимо менять");
             }
             if (newStatus == CertificateStatus.Cancelled)
             {
@@ -126,7 +127,7 @@ namespace CertificatesApp.Services
                    (oldStatus == CertificateStatus.InProgress && newStatus == CertificateStatus.Ready) ||
                    (oldStatus == CertificateStatus.Ready && newStatus == CertificateStatus.Completed);
             // Если дошло до этой строчки - значит что-то пошло не по плану
-            throw new Exception("Неожиданная ошибка транзакции статуса");
+            throw new InvalidStatusChangeException("Неожиданная ошибка транзакции статуса");
         }
 
         private CertificateRequestDto MapToDto(CertificateRequest request)
